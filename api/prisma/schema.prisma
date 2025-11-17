@@ -31,6 +31,11 @@ model Movie {
   duration      Int
   posterUrl     String?
   genre         String?
+  rating        String?
+  votes         Int?
+  score         Float?
+  language      String?
+  revenue       Float?
   userId        String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
