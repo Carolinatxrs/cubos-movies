@@ -22,7 +22,7 @@ model User {
 }
 
 model Movie {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   title         String
   originalTitle String
   releaseDate   DateTime
@@ -36,9 +36,10 @@ model Movie {
   score         Float?
   language      String?
   revenue       Float?
+  deletedAt     DateTime?
   userId        String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
