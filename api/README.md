@@ -1,99 +1,99 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+<h1 align="center">Cubos Movies — API (NestJS)</h1>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST em NestJS para o desafio Fullstack da Cubos Tecnologia. Implementa autenticação JWT, CRUD de filmes com filtros/paginação, upload de pôster para storage S3‑compatível (MinIO) e integração com PostgreSQL via Prisma.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> Dica: use este README junto com o README da raiz do monorepo para subir os serviços do Docker (Postgres e MinIO) rapidamente.
 
-## Description
+## Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- NestJS 10, TypeScript
+- Prisma ORM + PostgreSQL
+- JWT (Passport)
+- AWS SDK S3 (compatível com MinIO)
 
-## Project setup
+## Funcionalidades
 
-```bash
-$ npm install
-```
+- Registro e login de usuário (`/auth/register`, `/auth/login`)
+- Autorização via Bearer Token (JWT)
+- Filmes: criar, listar (com filtros), detalhar, atualizar e deletar (`/movies`)
+- Filtros: busca textual, duração mínima/máxima, período por data, e gênero
+- Paginação: `page` e `limit` (default 1 e 10)
+- Upload de pôster (`/movies/upload-poster`) com validação de tamanho/tipo
 
-## Compile and run the project
+## Variáveis de ambiente
 
-```bash
-# development
-$ npm run start
+Crie um arquivo `.env` na pasta `api/` baseado em `.env.example`.
 
-# watch mode
-$ npm run start:dev
+Obrigatórias:
 
-# production mode
-$ npm run start:prod
-```
+- `DATABASE_URL`: conexão do Prisma, ex.: `postgresql://USER:PASS@localhost:5432/movie_db`
+- `JWT_SECRET`: segredo do JWT
+- `PORT`: porta da API (ex.: `3000`)
+- `FRONTEND_URL`: origem permitida no CORS (ex.: `http://localhost:5173`)
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`: credenciais MinIO
+- `AWS_ENDPOINT`: ex.: `http://localhost:9000`
+- `AWS_BUCKET`: nome do bucket para armazenar pôsteres
 
-## Run tests
+## Subindo dependências (Docker)
+
+No diretório raiz do repositório, crie `.env` a partir de `.env.example` e suba os serviços:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker compose up -d
 ```
 
-## Deployment
+Serviços:
+- PostgreSQL em `localhost:5432`
+- MinIO API `http://localhost:9000` e Console `http://localhost:9001`
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+No Console do MinIO (porta 9001), autentique com `MINIO_USER`/`MINIO_PASSWORD` do `.env` da raiz e crie o bucket definido em `AWS_BUCKET`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Instalação
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+cd api
+npm install
+
+# Gera o client do Prisma e aplica migrações
+npx prisma generate
+npx prisma migrate dev --name init
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Execução
 
-## Resources
+```bash
+# desenvolvimento com watch
+npm run start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+# produção (após build)
+npm run build
+npm run start:prod
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+API padrão: `http://localhost:3000`
 
-## Support
+## Rotas principais
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- `POST /auth/register` – cria usuário
+- `POST /auth/login` – retorna `{ access_token }`
+- `GET /movies` – lista com filtros: `search`, `minDuration`, `maxDuration`, `startDate`, `endDate`, `genre`, `page`, `limit`
+- `GET /movies/:id` – detalhes do filme (somente do usuário criador)
+- `POST /movies` – cria filme (body conforme DTO)
+- `PATCH /movies/:id` – edita filme (somente do usuário criador)
+- `DELETE /movies/:id` – exclui filme (somente do usuário criador)
+- `POST /movies/upload-poster` – `multipart/form-data` com campo `poster` (png/jpg até 2MB). Retorna `{ url: "<key>" }` a ser salvo no filme.
 
-## Stay in touch
+Autorização: inclua `Authorization: Bearer <token>` (obtido em `/auth/login`).
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Notas sobre requisitos do desafio
 
-## License
+- Filtros obrigatórios (duração e data) e mais um extra (gênero) foram implementados.
+- Paginação com 10 itens por página por padrão.
+- Permissões: visualizar/editar/excluir restritos ao usuário criador.
+- Upload de pôster via MinIO (S3‑compatível). URLs de leitura temporárias são geradas quando necessário.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Troubleshooting
+
+- Erro de CORS: verifique `FRONTEND_URL` no `.env` e se o front está na URL correta.
+- Erro ao subir pôster: confirme `AWS_ENDPOINT`, credenciais e se o bucket existe no MinIO.
+- Erro de banco: confira `DATABASE_URL` e se o Postgres do Docker está rodando.
