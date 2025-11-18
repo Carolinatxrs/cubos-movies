@@ -3,9 +3,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Link as CustomLink } from "@/components/ui/link"
 import { useAuth } from "@/contexts/auth-provider"
+import { signIn } from "@/services/auth/sign-in-service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useLocation, useNavigate } from "react-router"
+import { toast } from "sonner"
 import z from "zod"
 
 const signInSchema = z.object({
@@ -32,21 +34,26 @@ export function SignIn() {
 
   const onSubmit = async (data: SignInFormData) => {
     try {
-      // Simulando resposta da API
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const loadingToast = toast.loading('Entrando...')
 
-      const mockUser = {
-        id: '1',
-        name: 'Usuário Teste',
-        email: data.email
-      }
+      const response = await signIn({
+        email: data.email,
+        password: data.password
+      })
 
-      const mockToken = 'mock-jwt-token'
+      toast.dismiss(loadingToast)
+      toast.success('Login realizado com sucesso!')
 
-      login(mockToken, mockUser)
+      login(response.token, {
+        id: response.user.id,
+        name: response.user.name,
+        email: response.user.email
+      })
+
       navigate(from, { replace: true })
     } catch (error) {
-      console.error('Login error:', error)
+      toast.dismiss()
+      toast.error(error instanceof Error ? error.message : 'Erro ao fazer login')
     }
   }
 

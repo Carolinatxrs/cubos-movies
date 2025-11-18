@@ -4,11 +4,11 @@ import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { useAuth } from '@/contexts/auth-provider'
 
-export function AuthLayout() {
+export function AppLayout() {
   const { isAuthenticated } = useAuth()
 
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />
+  if (!isAuthenticated) {
+    return <Navigate to="/auth/sign-in" replace />
   }
   
   return (

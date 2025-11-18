@@ -1,10 +1,32 @@
 import { Logo } from '@/assets/logo'
 import { LogoIcon } from '@/assets/logo-icon'
-
+import { useAuth } from '@/contexts/auth-provider'
 import { ThemeToggle } from './theme-toggle'
 import { Button } from './ui/button'
+import { useLocation, useNavigate } from 'react-router'
 
 export function Header() {
+  const { isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const isLoginPage = location.pathname === '/auth/sign-in'
+  const isSignUpPage = location.pathname === '/auth/sign-up'
+
+  const handleLogout = () => {
+    logout()
+  }
+
+  const handleToggleAuth = () => {
+    if (isLoginPage) {
+      navigate('/auth/sign-up')
+    } else if (isSignUpPage) {
+      navigate('/auth/sign-in')
+    } else {
+      navigate('/auth/sign-in')
+    }
+  }
+
   return (
     <header className="flex justify-between p-4 border-b border-[#F1E6FD30]">
       <div className="flex items-center gap-4">
@@ -15,7 +37,17 @@ export function Header() {
 
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        <Button>Cadastrar</Button>
+        {isAuthenticated ? (
+          <Button onClick={handleLogout}>
+            Logout
+          </Button>
+        ) : (
+          <>
+            <Button onClick={handleToggleAuth}>
+              {isLoginPage ? 'Cadastrar' : 'Login'}
+            </Button>
+          </>
+        )}
       </div>
     </header>
   )

@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/contexts/auth-provider"
+import { signUp } from "@/services/auth/sign-up-service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
+import { toast } from "sonner"
 import z from "zod"
 
 const signUpSchema = z.object({
@@ -33,28 +35,34 @@ export function SignUp() {
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
-      // TODO: Implementar chamada real à API
-      console.log('SignUp data:', data)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // Simulando registro e login automático
-      const mockUser = {
-        id: '1',
+      const loadingToast = toast.loading('Criando sua conta...')
+      
+      const response = await signUp({
         name: data.name,
-        email: data.email
-      }
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword
+      })
 
-      const mockToken = 'mock-jwt-token'
+      toast.dismiss(loadingToast)
+      toast.success('Conta criada com sucesso!')
 
-      login(mockToken, mockUser)
+      login(response.token, {
+        id: response.user.id,
+        name: response.user.name,
+        email: response.user.email
+      })
+
       navigate('/')
+      
     } catch (error) {
-      console.error('SignUp error:', error)
+      toast.dismiss()
+      toast.error(error instanceof Error ? error.message : 'Erro ao criar conta')
     }
   }
 
   return (
-    <div className="flex-1 flex justify-center items-center">
+    <div className="flex-1 flex justify-center items-center my-4">
       <div className="w-full max-w-[412px] dark:bg-[#232225] bg-[#F7EDFE] rounded-sm p-4 shadow-lg">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
