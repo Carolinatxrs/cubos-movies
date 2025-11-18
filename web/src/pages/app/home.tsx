@@ -4,14 +4,14 @@ import { SearchBar } from '@/components/search-bar'
 import { MovieCard } from '@/components/movie-card'
 import { Pagination } from '@/components/pagination'
 import { Button } from '@/components/ui/button'
-import { useNavigate } from 'react-router'
 import { listMovies, type MoviesFilters } from '@/services/movies/list-movies-service'
+import { CreateMovieDrawer } from '@/components/create-movie-drawer'
 
 export function Home() {
-  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false)
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -34,6 +34,7 @@ export function Home() {
     isLoading,
     isError,
     error,
+    refetch,
   } = useQuery({
     queryKey: ['movies', filters],
     queryFn: () => listMovies(filters),
@@ -44,7 +45,15 @@ export function Home() {
   const pagination = moviesData?.pagination
 
   const handleAddMovie = () => {
-    navigate('/movies/new')
+    setIsCreateDrawerOpen(true)
+  }
+
+  const handleCloseDrawer = () => {
+    setIsCreateDrawerOpen(false)
+  }
+
+  const handleMovieCreated = () => {
+    refetch()
   }
 
   const handleOpenFilters = () => {
@@ -117,13 +126,19 @@ export function Home() {
         )}
       </div>
 
-      {pagination && pagination.pages > 1 && (
+      {pagination && (
         <Pagination
           currentPage={currentPage}
           totalPages={pagination.pages}
           onPageChange={handlePageChange}
         />
       )}
+
+      <CreateMovieDrawer
+        isOpen={isCreateDrawerOpen}
+        onClose={handleCloseDrawer}
+        onSuccess={handleMovieCreated}
+      />
     </div>
   )
 }

@@ -40,7 +40,7 @@ export class CreateMovieDto {
   @IsNotEmpty({ message: 'Duração é obrigatória' })
   duration: number;
 
-  @IsUrl({}, { message: 'URL do poster deve ser válida' })
+  @IsString({ message: 'URL do poster deve ser válida' })
   @IsOptional()
   posterUrl?: string;
 

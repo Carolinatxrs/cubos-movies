@@ -33,7 +33,7 @@ export function MovieCard({ id, title, poster, genre = "Ação" }: MovieCardProp
           onError={handleImageError}
         />
 
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-black/90 via-black/50 to-transparent" />
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 p-4">
