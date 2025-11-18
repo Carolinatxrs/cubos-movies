@@ -2,9 +2,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Link as CustomLink } from "@/components/ui/link"
+import { useAuth } from "@/contexts/auth-provider"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router"
+import { useLocation, useNavigate } from "react-router"
 import z from "zod"
 
 const signInSchema = z.object({
@@ -16,6 +17,10 @@ type SignInFormData = z.infer<typeof signInSchema>
 
 export function SignIn() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
+
+  const from = location.state?.from?.pathname || '/'
 
   const {
     register,
@@ -27,10 +32,19 @@ export function SignIn() {
 
   const onSubmit = async (data: SignInFormData) => {
     try {
-      // TODO: Implementar chamada à API
-      console.log('Login data:', data)
+      // Simulando resposta da API
       await new Promise(resolve => setTimeout(resolve, 1000))
-      navigate('/movies')
+
+      const mockUser = {
+        id: '1',
+        name: 'Usuário Teste',
+        email: data.email
+      }
+
+      const mockToken = 'mock-jwt-token'
+
+      login(mockToken, mockUser)
+      navigate(from, { replace: true })
     } catch (error) {
       console.error('Login error:', error)
     }

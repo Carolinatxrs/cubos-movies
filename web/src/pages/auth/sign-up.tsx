@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@/contexts/auth-provider"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
@@ -20,6 +21,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>
 
 export function SignUp() {
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const {
     register,
@@ -31,10 +33,21 @@ export function SignUp() {
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
-      // TODO: Implementar chamada à API
+      // TODO: Implementar chamada real à API
       console.log('SignUp data:', data)
       await new Promise(resolve => setTimeout(resolve, 1000))
-      navigate('/sign-in')
+
+      // Simulando registro e login automático
+      const mockUser = {
+        id: '1',
+        name: data.name,
+        email: data.email
+      }
+
+      const mockToken = 'mock-jwt-token'
+
+      login(mockToken, mockUser)
+      navigate('/')
     } catch (error) {
       console.error('SignUp error:', error)
     }
