@@ -8,10 +8,14 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { FilterMoviesDto } from './dto/filter-movies.dto';
+import { StorageService } from './storage.service';
 
 @Injectable()
 export class MoviesService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(
+    private prismaService: PrismaService,
+    private storageService: StorageService,
+  ) { }
 
   async create(createMovieDto: CreateMovieDto, userId: string) {
     const movieData = {
@@ -32,7 +36,8 @@ export class MoviesService {
       },
     });
 
-    return this.addVirtualFields(movie);
+    const movieWithVirtualFields = this.addVirtualFields(movie);
+    return this.generatePoster(movieWithVirtualFields);
   }
 
   async findAll(filterMoviesDto: FilterMoviesDto) {
@@ -98,9 +103,12 @@ export class MoviesService {
     ]);
 
     const moviesWithVirtualFields = movies.map(movie => this.addVirtualFields(movie));
+    const moviesWithPoster = await Promise.all(
+      moviesWithVirtualFields.map(movie => this.generatePoster(movie))
+    );
 
     return {
-      movies: moviesWithVirtualFields,
+      movies: moviesWithPoster,
       pagination: {
         page,
         limit,
@@ -114,8 +122,8 @@ export class MoviesService {
     await this.validateMovieOwnership(id, userId);
 
     const movie = await this.findMovieWithUser(id);
-
-    return this.addVirtualFields(movie);
+    const movieWithVirtualFields = this.addVirtualFields(movie);
+    return this.generatePoster(movieWithVirtualFields);
   }
 
   async update(id: string, updateMovieDto: UpdateMovieDto, userId: string) {
@@ -217,5 +225,12 @@ export class MoviesService {
       profit,
       status,
     };
+  }
+
+  private async generatePoster(movie: CreateMovieDto) {
+    if (movie.posterUrl) {
+      movie.posterUrl = await this.storageService.generateUrl(movie.posterUrl);
+    }
+    return movie;
   }
 }
