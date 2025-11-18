@@ -2,6 +2,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Link } from '@/components/ui/link'
 
 export function Home() {
   return (
@@ -24,6 +25,8 @@ export function Home() {
         <Label htmlFor="email">Email Address</Label>
         <Input id="email" type="email" placeholder="Enter your email" />
       </div>
+
+      <Link>Esqueci minha senha</Link>
     </div>
   )
 }
