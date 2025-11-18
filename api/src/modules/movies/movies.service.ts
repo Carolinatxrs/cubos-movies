@@ -196,7 +196,7 @@ export class MoviesService {
     });
   }
 
-  private addVirtualFields(movie: any) {
+  private addVirtualFields(movie: CreateMovieDto) {
     const today = new Date();
     const releaseDate = new Date(movie.releaseDate);
 
