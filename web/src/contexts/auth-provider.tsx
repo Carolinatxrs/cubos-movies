@@ -29,6 +29,18 @@ const initialState: AuthContextState = {
 
 const AuthContext = createContext<AuthContextState>(initialState)
 
+const isTokenValid = (token: string | null): boolean => {
+  if (!token) return false
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const expirationTime = payload.exp * 1000
+    return Date.now() < expirationTime
+  } catch {
+    return false
+  }
+}
+
 export function AuthProvider({
   children,
   storageKey = '@cubos:auth',
@@ -41,9 +53,12 @@ export function AuthProvider({
     const storedToken = localStorage.getItem(`${storageKey}:token`)
     const storedUser = localStorage.getItem(`${storageKey}:user`)
 
-    if (storedToken && storedUser) {
+    if (storedToken && storedUser && isTokenValid(storedToken)) {
       setToken(storedToken)
       setUser(JSON.parse(storedUser))
+    } else {
+      localStorage.removeItem(`${storageKey}:token`)
+      localStorage.removeItem(`${storageKey}:user`)
     }
 
     setIsLoading(false)
