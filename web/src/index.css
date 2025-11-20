@@ -43,6 +43,12 @@
   --sidebar-accent-foreground: #1C1C1F;
   --sidebar-border: #0000001a;
   --sidebar-ring: #8E4EC6;
+
+  --movie-primary-text: #1A1A1C;        
+  --movie-secondary-text: #665B7A;      
+  --movie-box-bg: #FFFFFF;              
+  --movie-box-border: #CFC9DB;          
+  --movie-accent-purple: #C150FF2E;    
 }
 
 .dark {
@@ -81,6 +87,12 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #ffffff1a;
   --sidebar-ring: #4d179a;
+
+  --movie-primary-text: #EEEEF0;        
+  --movie-secondary-text: #B5B2BC;      
+  --movie-box-bg: #EBEAF814;            
+  --movie-box-border: #3C393F;          
+  --movie-accent-purple: #C150FF2E;     
 }
 
 
@@ -117,6 +129,12 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-movie-primary-text: var(--movie-primary-text);
+  --color-movie-secondary-text: var(--movie-secondary-text);
+  --color-movie-box-bg: var(--movie-box-bg);
+  --color-movie-box-border: var(--movie-box-border);
+  --color-movie-accent-purple: var(--movie-accent-purple);
 }
 
 @utility bg-cinema {
@@ -180,7 +198,7 @@
 
 .line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

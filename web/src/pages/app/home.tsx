@@ -92,10 +92,10 @@ export function Home() {
         </div>
       </div>
 
-      <div className="bg-card dark:bg-[#EBEAF814] rounded-sm p-6 border border-border backdrop-blur-sm">
+      <div className="bg-movie-box-bg rounded-sm p-6 border border-movie-box-border backdrop-blur-sm">
         {isLoading ? (
           <div className="text-center py-12">
-            <p className="text-muted-foreground font-roboto text-lg">
+            <p className="text-movie-secondary-text font-roboto text-lg">
               Carregando filmes...
             </p>
           </div>
@@ -119,7 +119,7 @@ export function Home() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-muted-foreground font-roboto text-lg">
+            <p className="text-movie-secondary-text font-roboto text-lg">
               {debouncedSearch ? 'Nenhum filme encontrado para sua busca.' : 'Nenhum filme cadastrado.'}
             </p>
           </div>
