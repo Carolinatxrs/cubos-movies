@@ -1,4 +1,4 @@
-import { SearchIcon as Search  } from '@/assets/search-icon'
+import { SearchIcon as Search } from '@/assets/search-icon'
 
 interface SearchBarProps {
   value: string
@@ -6,7 +6,11 @@ interface SearchBarProps {
   placeholder?: string
 }
 
-export function SearchBar({ value, onChange, placeholder = "Buscar filme..." }: SearchBarProps) {
+export function SearchBar({
+  value,
+  onChange,
+  placeholder = 'Buscar filme...',
+}: SearchBarProps) {
   return (
     <div className="relative flex-1 max-w-[488px]">
       <input

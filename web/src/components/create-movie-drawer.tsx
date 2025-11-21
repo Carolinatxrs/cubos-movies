@@ -1,21 +1,25 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { toast } from 'sonner'
-import { Drawer } from './ui/drawer'
-import { Button } from './ui/button'
-import { Input } from './ui/input'
-import { Label } from './ui/label'
-import { FileInput } from './ui/file-input'
+import { z } from 'zod'
+
 import { createMovie } from '@/services/movies/create-movie-service'
 import { uploadPoster } from '@/services/movies/upload-poster-service'
+
+import { Button } from './ui/button'
+import { Drawer } from './ui/drawer'
+import { FileInput } from './ui/file-input'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
 
 const createMovieSchema = z.object({
   title: z.string().min(1, 'Título é obrigatório'),
   originalTitle: z.string().min(1, 'Título original é obrigatório'),
   releaseDate: z.string().min(1, 'Data de lançamento é obrigatória'),
-  description: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
+  description: z
+    .string()
+    .min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   budget: z.number().min(0, 'Orçamento não pode ser negativo'),
   duration: z.number().min(1, 'Duração deve ser maior que 0'),
   genre: z.string().min(1, 'Gênero é obrigatório'),
@@ -34,7 +38,11 @@ interface CreateMovieDrawerProps {
   onSuccess: () => void
 }
 
-export function CreateMovieDrawer({ isOpen, onClose, onSuccess }: CreateMovieDrawerProps) {
+export function CreateMovieDrawer({
+  isOpen,
+  onClose,
+  onSuccess,
+}: CreateMovieDrawerProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
@@ -51,7 +59,7 @@ export function CreateMovieDrawer({ isOpen, onClose, onSuccess }: CreateMovieDra
       votes: 0,
       score: 0,
       revenue: 0,
-    }
+    },
   })
 
   const handleFileSelect = (file: File) => {
@@ -80,9 +88,9 @@ export function CreateMovieDrawer({ isOpen, onClose, onSuccess }: CreateMovieDra
       await createMovie({
         ...data,
         posterUrl,
-        votes: data.votes || 0,
-        score: data.score || 0,
-        revenue: data.revenue || 0,
+        votes: data.votes ?? 0,
+        score: data.score ?? 0,
+        revenue: data.revenue ?? 0,
       })
 
       toast.dismiss(loadingToast)
@@ -90,11 +98,12 @@ export function CreateMovieDrawer({ isOpen, onClose, onSuccess }: CreateMovieDra
 
       handleClose()
       onSuccess()
-
     } catch (error) {
       setIsUploading(false)
       toast.dismiss()
-      toast.error(error instanceof Error ? error.message : 'Erro ao cadastrar filme')
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao cadastrar filme',
+      )
     }
   }
 
@@ -109,7 +118,10 @@ export function CreateMovieDrawer({ isOpen, onClose, onSuccess }: CreateMovieDra
           </h2>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex-1 flex flex-col gap-4"
+        >
           <div className="flex-1 space-y-4 overflow-y-auto pr-2">
             <div className="space-y-2">
               <Label htmlFor="title">Título *</Label>
@@ -221,10 +233,7 @@ export function CreateMovieDrawer({ isOpen, onClose, onSuccess }: CreateMovieDra
 
             <div className="space-y-2">
               <Label>Poster</Label>
-              <FileInput
-                onFileSelect={handleFileSelect}
-                accept="image/*"
-              />
+              <FileInput onFileSelect={handleFileSelect} accept="image/*" />
               {selectedFile && (
                 <span className="text-sm text-muted-foreground">
                   Arquivo selecionado: {selectedFile.name}
@@ -323,10 +332,7 @@ export function CreateMovieDrawer({ isOpen, onClose, onSuccess }: CreateMovieDra
             >
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-            >
+            <Button type="submit" disabled={isLoading}>
               {isLoading ? 'Adicionando...' : 'Adicionar Filme'}
             </Button>
           </div>

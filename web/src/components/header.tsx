@@ -1,9 +1,11 @@
+import { useLocation, useNavigate } from 'react-router'
+
 import { Logo } from '@/assets/logo'
 import { LogoIcon } from '@/assets/logo-icon'
-import { useAuth } from '@/contexts/auth-provider'
+import { useAuth } from '@/contexts'
+
 import { ThemeToggle } from './theme-toggle'
 import { Button } from './ui/button'
-import { useLocation, useNavigate } from 'react-router'
 
 export function Header() {
   const { isAuthenticated, logout } = useAuth()
@@ -19,11 +21,11 @@ export function Header() {
 
   const handleToggleAuth = () => {
     if (isLoginPage) {
-      navigate('/auth/sign-up')
+      void navigate('/auth/sign-up')
     } else if (isSignUpPage) {
-      navigate('/auth/sign-in')
+      void navigate('/auth/sign-in')
     } else {
-      navigate('/auth/sign-in')
+      void navigate('/auth/sign-in')
     }
   }
 
@@ -38,9 +40,7 @@ export function Header() {
       <div className="flex items-center gap-2">
         <ThemeToggle />
         {isAuthenticated ? (
-          <Button onClick={handleLogout}>
-            Logout
-          </Button>
+          <Button onClick={handleLogout}>Logout</Button>
         ) : (
           <>
             <Button onClick={handleToggleAuth}>

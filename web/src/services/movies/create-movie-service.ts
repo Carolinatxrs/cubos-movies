@@ -1,5 +1,5 @@
-import api from "../axios"
-import type { Movie } from "./list-movies-service"
+import api from '../axios'
+import type { Movie } from './list-movies-service'
 
 export interface CreateMovieRequest {
   title: string
@@ -18,6 +18,6 @@ export interface CreateMovieRequest {
 }
 
 export async function createMovie(data: CreateMovieRequest): Promise<Movie> {
-  const response = await api.post('/movies', data)
+  const response = await api.post<Movie>('/movies', data)
   return response.data
 }

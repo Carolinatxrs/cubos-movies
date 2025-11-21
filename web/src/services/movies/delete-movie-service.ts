@@ -1,6 +1,5 @@
-import api from "../axios";
+import api from '../axios'
 
-export const deleteMovie = async (id: string) => {
-  const response = await api.delete(`/movies/${id}`);
-  return response.data;
-};
+export async function deleteMovie(id: string): Promise<void> {
+  await api.delete(`/movies/${id}`)
+}

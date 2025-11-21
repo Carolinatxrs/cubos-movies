@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { SearchBar } from '@/components/search-bar'
+import { useEffect, useState } from 'react'
+
+import { CreateMovieDrawer } from '@/components/create-movie-drawer'
 import { MovieCard } from '@/components/movie-card'
 import { Pagination } from '@/components/pagination'
+import { SearchBar } from '@/components/search-bar'
 import { Button } from '@/components/ui/button'
-import { listMovies, type MoviesFilters } from '@/services/movies/list-movies-service'
-import { CreateMovieDrawer } from '@/components/create-movie-drawer'
+import {
+  listMovies,
+  type MoviesFilters,
+} from '@/services/movies/list-movies-service'
 
 export function Home() {
   const [search, setSearch] = useState('')
@@ -41,7 +45,7 @@ export function Home() {
     staleTime: 1000 * 60 * 5,
   })
 
-  const currentMovies = moviesData?.movies || []
+  const currentMovies = moviesData?.movies ?? []
   const pagination = moviesData?.pagination
 
   const handleAddMovie = () => {
@@ -52,8 +56,8 @@ export function Home() {
     setIsCreateDrawerOpen(false)
   }
 
-  const handleMovieCreated = () => {
-    refetch()
+  const handleMovieCreated = async () => {
+    await refetch()
   }
 
   const handleOpenFilters = () => {
@@ -102,7 +106,10 @@ export function Home() {
         ) : isError ? (
           <div className="text-center py-12">
             <p className="text-destructive font-roboto text-lg">
-              Erro ao carregar filmes: {error instanceof Error ? error.message : 'Erro desconhecido'}
+              Erro ao carregar filmes:{' '}
+              {error instanceof Error
+                ? error.message
+                : 'Não foi possível carregar a lista de filmes.'}
             </p>
           </div>
         ) : currentMovies.length > 0 ? (
@@ -120,7 +127,9 @@ export function Home() {
         ) : (
           <div className="text-center py-12">
             <p className="text-movie-secondary-text font-roboto text-lg">
-              {debouncedSearch ? 'Nenhum filme encontrado para sua busca.' : 'Nenhum filme cadastrado.'}
+              {debouncedSearch
+                ? 'Nenhum filme encontrado para sua busca.'
+                : 'Nenhum filme cadastrado.'}
             </p>
           </div>
         )}

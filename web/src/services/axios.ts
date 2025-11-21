@@ -1,6 +1,7 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+const baseURL =
+  (import.meta.env.VITE_API_URL as string) || 'http://localhost:3000'
 
 export const api = axios.create({
   baseURL,
@@ -19,23 +20,25 @@ api.interceptors.request.use(
     return config
   },
   (error) => {
-    return Promise.reject(error)
-  }
+    const rejectionError =
+      error instanceof Error ? error : new Error(String(error))
+    return Promise.reject(rejectionError)
+  },
 )
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const message = error.response?.data?.message || 'Erro na requisição'
-    
+  (error: AxiosError<{ message?: string }>) => {
+    const message = error.response?.data?.message ?? 'Erro na requisição'
+
     if (error.response?.status === 401) {
       localStorage.removeItem('@cubos:auth:token')
       localStorage.removeItem('@cubos:auth:user')
       window.location.href = '/auth/sign-in'
     }
-    
+
     return Promise.reject(new Error(message))
-  }
+  },
 )
 
 export default api

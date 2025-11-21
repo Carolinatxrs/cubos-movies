@@ -8,12 +8,17 @@ interface MovieCardProps {
   genre?: string
 }
 
-export function MovieCard({ id, title, poster, genre = "Ação" }: MovieCardProps) {
+export function MovieCard({
+  id,
+  title,
+  poster,
+  genre = 'Ação',
+}: MovieCardProps) {
   const navigate = useNavigate()
   const [imageError, setImageError] = useState(false)
 
   const handleClick = () => {
-    navigate(`/movies/${id}`)
+    void navigate(`/movies/${id}`)
   }
 
   const handleImageError = () => {
@@ -38,15 +43,11 @@ export function MovieCard({ id, title, poster, genre = "Ação" }: MovieCardProp
 
       <div className="absolute bottom-0 left-0 right-0 p-4">
         <div className="relative">
-          <h3
-            className="text-white font-montserrat font-semibold text-base leading-tight uppercase mb-1 line-clamp-2 drop-shadow-lg"
-          >
+          <h3 className="text-white font-montserrat font-semibold text-base leading-tight uppercase mb-1 line-clamp-2 drop-shadow-lg">
             {title}
           </h3>
 
-          <div
-            className="text-gray-300 font-montserrat font-normal text-xs leading-none transition-all duration-300 overflow-hidden opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 drop-shadow-lg"
-          >
+          <div className="text-gray-300 font-montserrat font-normal text-xs leading-none transition-all duration-300 overflow-hidden opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 drop-shadow-lg">
             {genre}
           </div>
         </div>

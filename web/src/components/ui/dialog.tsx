@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from 'react'
 
 interface DialogProps {
   open?: boolean
@@ -26,19 +26,33 @@ const DialogContext = React.createContext<{
   onOpenChange: (open: boolean) => void
 }>({
   open: false,
-  onOpenChange: () => { },
+  onOpenChange: () => {
+    return
+  },
 })
 
 export function Dialog({ open = false, onOpenChange, children }: DialogProps) {
   return (
-    <DialogContext.Provider value={{ open, onOpenChange: onOpenChange || (() => { }) }}>
+    <DialogContext
+      value={{
+        open,
+        onOpenChange:
+          onOpenChange ??
+          (() => {
+            return
+          }),
+      }}
+    >
       {children}
-    </DialogContext.Provider>
+    </DialogContext>
   )
 }
 
-export function DialogContent({ children, className = "" }: DialogContentProps) {
-  const { open, onOpenChange } = React.useContext(DialogContext)
+export function DialogContent({
+  children,
+  className = '',
+}: DialogContentProps) {
+  const { open, onOpenChange } = React.use(DialogContext)
 
   if (!open) return null
 
@@ -51,14 +65,16 @@ export function DialogContent({ children, className = "" }: DialogContentProps) 
       />
 
       {/* Content */}
-      <div className={`
+      <div
+        className={`
         relative z-50 
         w-full max-w-md 
         rounded-sm 
         border 
         shadow-lg 
         ${className}
-      `}>
+      `}
+      >
         <button
           onClick={() => onOpenChange(false)}
           className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 w-6 h-6 flex items-center justify-center bg-muted text-foreground text-sm font-bold"
@@ -71,17 +87,21 @@ export function DialogContent({ children, className = "" }: DialogContentProps) 
   )
 }
 
-export function DialogHeader({ children, className = "" }: DialogHeaderProps) {
+export function DialogHeader({ children, className = '' }: DialogHeaderProps) {
   return (
-    <div className={`flex flex-col space-y-1.5 text-center sm:text-left ${className}`}>
+    <div
+      className={`flex flex-col space-y-1.5 text-center sm:text-left ${className}`}
+    >
       {children}
     </div>
   )
 }
 
-export function DialogTitle({ children, className = "" }: DialogTitleProps) {
+export function DialogTitle({ children, className = '' }: DialogTitleProps) {
   return (
-    <h2 className={`text-lg font-semibold leading-none tracking-tight ${className}`}>
+    <h2
+      className={`text-lg font-semibold leading-none tracking-tight ${className}`}
+    >
       {children}
     </h2>
   )

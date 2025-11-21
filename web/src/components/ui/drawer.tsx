@@ -11,11 +11,8 @@ export function Drawer({ isOpen, onClose, children }: DrawerProps) {
 
   return (
     <>
-      <div 
-        className="fixed inset-0 bg-black/50 z-40"
-        onClick={onClose}
-      />
-      
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
+
       <div className="fixed right-0 top-0 h-full w-[565px] bg-[#232225] z-50 rounded-l-sm overflow-y-auto">
         {children}
       </div>

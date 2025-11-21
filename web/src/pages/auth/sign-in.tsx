@@ -1,18 +1,25 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Link as CustomLink } from "@/components/ui/link"
-import { useAuth } from "@/contexts/auth-provider"
-import { signIn } from "@/services/auth/sign-in-service"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { useLocation, useNavigate } from "react-router"
-import { toast } from "sonner"
-import z from "zod"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { useLocation, useNavigate } from 'react-router'
+import { toast } from 'sonner'
+import z from 'zod'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Link as CustomLink } from '@/components/ui/link'
+import { useAuth } from '@/contexts'
+import { signIn } from '@/services/auth/sign-in-service'
+
+interface LocationState {
+  from?: {
+    pathname: string
+  }
+}
 
 const signInSchema = z.object({
   email: z.string().email('E-mail inválido'),
-  password: z.string().min(6, 'Senha é obrigatória')
+  password: z.string().min(6, 'Senha é obrigatória'),
 })
 
 type SignInFormData = z.infer<typeof signInSchema>
@@ -22,14 +29,14 @@ export function SignIn() {
   const location = useLocation()
   const { login } = useAuth()
 
-  const from = location.state?.from?.pathname || '/'
+  const from = (location.state as LocationState)?.from?.pathname ?? '/'
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema)
+    resolver: zodResolver(signInSchema),
   })
 
   const onSubmit = async (data: SignInFormData) => {
@@ -38,7 +45,7 @@ export function SignIn() {
 
       const response = await signIn({
         email: data.email,
-        password: data.password
+        password: data.password,
       })
 
       toast.dismiss(loadingToast)
@@ -47,13 +54,15 @@ export function SignIn() {
       login(response.token, {
         id: response.user.id,
         name: response.user.name,
-        email: response.user.email
+        email: response.user.email,
       })
 
-      navigate(from, { replace: true })
+      void navigate(from, { replace: true })
     } catch (error) {
       toast.dismiss()
-      toast.error(error instanceof Error ? error.message : 'Erro ao fazer login')
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao fazer login',
+      )
     }
   }
 
@@ -63,9 +72,7 @@ export function SignIn() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label htmlFor="email">
-                Nome/E-mail
-              </Label>
+              <Label htmlFor="email">Nome/E-mail</Label>
             </div>
             <Input
               id="email"
@@ -83,9 +90,7 @@ export function SignIn() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label htmlFor="password">
-                Senha
-              </Label>
+              <Label htmlFor="password">Senha</Label>
             </div>
             <Input
               id="password"
@@ -102,10 +107,7 @@ export function SignIn() {
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <CustomLink
-              href="#"
-              className="text-base whitespace-nowrap"
-            >
+            <CustomLink href="#" className="text-base whitespace-nowrap">
               Esqueci minha senha
             </CustomLink>
             <Button
@@ -118,7 +120,7 @@ export function SignIn() {
             </Button>
           </div>
         </form>
-      </div >
-    </div >
+      </div>
+    </div>
   )
 }

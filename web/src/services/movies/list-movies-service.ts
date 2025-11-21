@@ -1,4 +1,4 @@
-import api from "../axios"
+import api from '../axios'
 
 export interface Movie {
   id: string
@@ -51,18 +51,22 @@ export interface MoviesFilters {
   endDate?: string
 }
 
-export async function listMovies(filters?: MoviesFilters): Promise<MoviesResponse> {
+export async function listMovies(
+  filters?: MoviesFilters,
+): Promise<MoviesResponse> {
   const params = new URLSearchParams()
 
   if (filters?.page) params.append('page', filters.page.toString())
   if (filters?.limit) params.append('limit', filters.limit.toString())
   if (filters?.search) params.append('search', filters.search)
   if (filters?.genre) params.append('genre', filters.genre)
-  if (filters?.minDuration) params.append('minDuration', filters.minDuration.toString())
-  if (filters?.maxDuration) params.append('maxDuration', filters.maxDuration.toString())
+  if (filters?.minDuration)
+    params.append('minDuration', filters.minDuration.toString())
+  if (filters?.maxDuration)
+    params.append('maxDuration', filters.maxDuration.toString())
   if (filters?.startDate) params.append('startDate', filters.startDate)
   if (filters?.endDate) params.append('endDate', filters.endDate)
 
-  const response = await api.get(`/movies?${params.toString()}`)
+  const response = await api.get<MoviesResponse>(`/movies?${params.toString()}`)
   return response.data
 }

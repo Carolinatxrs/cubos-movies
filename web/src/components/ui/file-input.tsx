@@ -1,13 +1,20 @@
-import { useRef, type ComponentProps } from 'react'
-import { Button } from './button'
+import { type ComponentProps, useRef } from 'react'
+
 import { cn } from '@/utils/merge-classes'
+
+import { Button } from './button'
 
 interface FileInputProps extends Omit<ComponentProps<'input'>, 'type'> {
   onFileSelect: (file: File) => void
   accept?: string
 }
 
-export function FileInput({ onFileSelect, accept = "image/*", className, ...props }: FileInputProps) {
+export function FileInput({
+  onFileSelect,
+  accept = 'image/*',
+  className,
+  ...props
+}: FileInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleClick = () => {

@@ -1,4 +1,4 @@
-import api from "../axios"
+import api from '../axios'
 
 export interface SignUpRequest {
   name: string
@@ -18,6 +18,6 @@ export interface SignUpResponse {
 }
 
 export async function signUp(data: SignUpRequest): Promise<SignUpResponse> {
-  const response = await api.post('/auth/register', data)
+  const response = await api.post<SignUpResponse>('/auth/register', data)
   return response.data
 }

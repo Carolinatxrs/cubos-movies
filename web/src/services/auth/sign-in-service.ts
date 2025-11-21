@@ -1,4 +1,4 @@
-import api from "../axios"
+import api from '../axios'
 
 export interface SignInRequest {
   email: string
@@ -16,6 +16,6 @@ export interface SignInResponse {
 }
 
 export async function signIn(data: SignInRequest): Promise<SignInResponse> {
-  const response = await api.post('/auth/login', data)
+  const response = await api.post<SignInResponse>('/auth/login', data)
   return response.data
 }

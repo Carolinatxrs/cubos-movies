@@ -35,6 +35,12 @@ export default defineConfig([
       },
     },
     rules: {
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        {
+          "checksVoidReturn": false
+        }
+      ],
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
       'prettier/prettier': [

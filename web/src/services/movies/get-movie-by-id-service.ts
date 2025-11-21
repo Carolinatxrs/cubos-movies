@@ -1,7 +1,7 @@
-import api from "../axios"
-import type { Movie } from "./list-movies-service"
+import api from '../axios'
+import type { Movie } from './list-movies-service'
 
 export async function getMovieById(id: string): Promise<Movie> {
-  const response = await api.get(`/movies/${id}`)
+  const response = await api.get<Movie>(`/movies/${id}`)
   return response.data
 }

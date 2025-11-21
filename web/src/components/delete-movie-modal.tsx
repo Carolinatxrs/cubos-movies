@@ -1,12 +1,13 @@
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Button } from '@/components/ui/button'
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 
 interface DeleteMovieModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  movieTitle: string;
-  isLoading?: boolean;
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: () => void
+  movieTitle: string
+  isLoading?: boolean
 }
 
 export function DeleteMovieModal({
@@ -14,7 +15,7 @@ export function DeleteMovieModal({
   onClose,
   onConfirm,
   movieTitle,
-  isLoading = false
+  isLoading = false,
 }: DeleteMovieModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -27,19 +28,17 @@ export function DeleteMovieModal({
 
         <div className="space-y-4 my-4">
           <p className="text-foreground font-roboto">
-            Tem certeza que deseja deletar o filme <strong>"{movieTitle}"</strong>?
+            Tem certeza que deseja deletar o filme{' '}
+            <strong>"{movieTitle}"</strong>?
           </p>
           <p className="text-muted-foreground text-sm font-roboto">
-            Esta ação não pode ser desfeita. Todos os dados do filme serão permanentemente removidos.
+            Esta ação não pode ser desfeita. Todos os dados do filme serão
+            permanentemente removidos.
           </p>
         </div>
 
         <div className="flex gap-3 justify-end pt-4 ">
-          <Button
-            variant="secondary"
-            onClick={onClose}
-            disabled={isLoading}
-          >
+          <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             Cancelar
           </Button>
           <Button
@@ -52,5 +51,5 @@ export function DeleteMovieModal({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

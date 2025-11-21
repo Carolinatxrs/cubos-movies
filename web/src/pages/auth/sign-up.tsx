@@ -1,23 +1,26 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useAuth } from "@/contexts/auth-provider"
-import { signUp } from "@/services/auth/sign-up-service"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router"
-import { toast } from "sonner"
-import z from "zod"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router'
+import { toast } from 'sonner'
+import z from 'zod'
 
-const signUpSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  email: z.string().email('E-mail inválido'),
-  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
-  confirmPassword: z.string().min(6, 'Confirmação de senha é obrigatória')
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Senhas não conferem",
-  path: ["confirmPassword"],
-})
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useAuth } from '@/contexts'
+import { signUp } from '@/services/auth/sign-up-service'
+
+const signUpSchema = z
+  .object({
+    name: z.string().min(1, 'Nome é obrigatório'),
+    email: z.string().email('E-mail inválido'),
+    password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+    confirmPassword: z.string().min(6, 'Confirmação de senha é obrigatória'),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Senhas não conferem',
+    path: ['confirmPassword'],
+  })
 
 type SignUpFormData = z.infer<typeof signUpSchema>
 
@@ -28,20 +31,20 @@ export function SignUp() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm<SignUpFormData>({
-    resolver: zodResolver(signUpSchema)
+    resolver: zodResolver(signUpSchema),
   })
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
       const loadingToast = toast.loading('Criando sua conta...')
-      
+
       const response = await signUp({
         name: data.name,
         email: data.email,
         password: data.password,
-        confirmPassword: data.confirmPassword
+        confirmPassword: data.confirmPassword,
       })
 
       toast.dismiss(loadingToast)
@@ -50,14 +53,15 @@ export function SignUp() {
       login(response.token, {
         id: response.user.id,
         name: response.user.name,
-        email: response.user.email
+        email: response.user.email,
       })
 
-      navigate('/')
-      
+      void navigate('/')
     } catch (error) {
       toast.dismiss()
-      toast.error(error instanceof Error ? error.message : 'Erro ao criar conta')
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao criar conta',
+      )
     }
   }
 
@@ -67,9 +71,7 @@ export function SignUp() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label htmlFor="name">
-                Nome
-              </Label>
+              <Label htmlFor="name">Nome</Label>
             </div>
             <Input
               id="name"
@@ -87,9 +89,7 @@ export function SignUp() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label htmlFor="email">
-                E-mail
-              </Label>
+              <Label htmlFor="email">E-mail</Label>
             </div>
             <Input
               id="email"
@@ -107,9 +107,7 @@ export function SignUp() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label htmlFor="password">
-                Senha
-              </Label>
+              <Label htmlFor="password">Senha</Label>
             </div>
             <Input
               id="password"
@@ -127,9 +125,7 @@ export function SignUp() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label htmlFor="confirmPassword">
-                Confirmação de senha
-              </Label>
+              <Label htmlFor="confirmPassword">Confirmação de senha</Label>
             </div>
             <Input
               id="confirmPassword"
@@ -156,7 +152,7 @@ export function SignUp() {
             </Button>
           </div>
         </form>
-      </div >
-    </div >
+      </div>
+    </div>
   )
 }
