@@ -5,6 +5,10 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { createMovie } from '@/services/movies/create-movie-service'
+import {
+  updateMovie,
+  type UpdateMovieRequest,
+} from '@/services/movies/update-movie-service'
 import { uploadPoster } from '@/services/movies/upload-poster-service'
 
 import { Button } from './ui/button'
@@ -28,51 +32,112 @@ const createMovieSchema = z.object({
   score: z.number().min(0).max(10, 'Nota deve ser entre 0 e 10').optional(),
   language: z.string().min(1, 'Idioma é obrigatório'),
   revenue: z.number().min(0, 'Receita não pode ser negativo').optional(),
+  posterUrl: z.string().optional(),
 })
 
-type CreateMovieFormData = z.infer<typeof createMovieSchema>
+export type MovieFormData = z.infer<typeof createMovieSchema>
 
-interface CreateMovieDrawerProps {
+interface MovieDrawerProps {
+  initialValues?: MovieFormData & { id: string }
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
 }
 
-export function CreateMovieDrawer({
+export function MovieDrawer({
+  initialValues,
   isOpen,
   onClose,
   onSuccess,
-}: CreateMovieDrawerProps) {
+}: MovieDrawerProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const [currentPosterUrl, setCurrentPosterUrl] = useState<string | undefined>(
+    initialValues?.posterUrl,
+  )
+
+  const isEditing = Boolean(initialValues)
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<CreateMovieFormData>({
+    setValue,
+  } = useForm<MovieFormData>({
     resolver: zodResolver(createMovieSchema),
-    defaultValues: {
-      duration: 0,
+    defaultValues: initialValues ?? {
       budget: 0,
+      duration: 0,
       votes: 0,
       score: 0,
       revenue: 0,
+      posterUrl: '',
     },
   })
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file)
+    setCurrentPosterUrl(undefined)
+    setValue('posterUrl', '')
   }
 
   const handleClose = () => {
     reset()
     setSelectedFile(null)
+    setCurrentPosterUrl(undefined)
     onClose()
   }
 
-  const onSubmit = async (data: CreateMovieFormData) => {
+  const handleEditMovie = async (id: string, data: MovieFormData) => {
+    try {
+      let posterUrl: string | undefined = undefined
+
+      if (selectedFile) {
+        setIsUploading(true)
+        const uploadResponse = await uploadPoster(selectedFile)
+        posterUrl = uploadResponse.url
+        setIsUploading(false)
+      }
+
+      const loadingToast = toast.loading('Editando filme...')
+
+      const updateData: UpdateMovieRequest = {
+        title: data.title,
+        originalTitle: data.originalTitle,
+        releaseDate: data.releaseDate,
+        description: data.description,
+        budget: data.budget,
+        duration: data.duration,
+        genre: data.genre,
+        rating: data.rating,
+        language: data.language,
+        votes: data.votes ?? 0,
+        score: data.score ?? 0,
+        revenue: data.revenue ?? 0,
+      }
+
+      if (selectedFile && posterUrl) {
+        updateData.posterUrl = posterUrl
+      }
+
+      await updateMovie(id, updateData)
+
+      toast.dismiss(loadingToast)
+      toast.success('Filme editado com sucesso!')
+
+      handleClose()
+      onSuccess()
+    } catch (error) {
+      setIsUploading(false)
+      toast.dismiss()
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao editar filme',
+      )
+    }
+  }
+
+  const handleCreateMovie = async (data: MovieFormData) => {
     try {
       let posterUrl = ''
 
@@ -107,14 +172,23 @@ export function CreateMovieDrawer({
     }
   }
 
+  const onSubmit = async (data: MovieFormData) => {
+    if (!isEditing) {
+      await handleCreateMovie(data)
+    } else {
+      const movieId = initialValues!.id
+      await handleEditMovie(movieId, data)
+    }
+  }
+
   const isLoading = isSubmitting || isUploading
 
   return (
     <Drawer isOpen={isOpen} onClose={handleClose}>
       <div className="p-4 h-full flex flex-col">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white font-inter">
-            Adicionar Filme
+          <h2 className="text-2xl font-bold text-movie-secondary-text font-roboto">
+            {isEditing ? 'Editar Filme' : 'Adicionar Filme'}
           </h2>
         </div>
 
@@ -233,11 +307,36 @@ export function CreateMovieDrawer({
 
             <div className="space-y-2">
               <Label>Poster</Label>
+
+              {isEditing && currentPosterUrl && !selectedFile && (
+                <div className="mb-3">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Poster atual:
+                  </p>
+                  <img
+                    src={currentPosterUrl}
+                    alt="Poster atual"
+                    className="h-32 object-cover rounded-sm border"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Selecione um novo arquivo para substituir
+                  </p>
+                </div>
+              )}
+
               <FileInput onFileSelect={handleFileSelect} accept="image/*" />
+
               {selectedFile && (
-                <span className="text-sm text-muted-foreground">
-                  Arquivo selecionado: {selectedFile.name}
-                </span>
+                <div className="mt-2">
+                  <span className="text-sm text-muted-foreground">
+                    Arquivo selecionado: {selectedFile.name}
+                  </span>
+                  {isEditing && currentPosterUrl && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      O poster atual será substituído
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 
@@ -323,7 +422,7 @@ export function CreateMovieDrawer({
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4 mb-2 border-t border-border lg:justify-end">
+          <div className="flex gap-3 pt-4 mb-4 border-t border-border lg:justify-end">
             <Button
               type="button"
               variant="secondary"
@@ -333,7 +432,13 @@ export function CreateMovieDrawer({
               Cancelar
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Adicionando...' : 'Adicionar Filme'}
+              {isEditing
+                ? isLoading
+                  ? 'Editando...'
+                  : 'Editar Filme'
+                : isLoading
+                  ? 'Adicionando...'
+                  : 'Adicionar Filme'}
             </Button>
           </div>
         </form>

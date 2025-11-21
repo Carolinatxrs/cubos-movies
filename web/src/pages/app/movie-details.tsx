@@ -1,47 +1,52 @@
-import { useQueryClient } from '@tanstack/react-query'
-import React, { useEffect, useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import { toast } from 'sonner'
 
 import { DeleteMovieModal } from '@/components/delete-movie-modal'
+import { MovieDrawer } from '@/components/movie-drawer'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts'
 import { deleteMovie } from '@/services/movies/delete-movie-service'
 import { getMovieById } from '@/services/movies/get-movie-by-id-service'
-import type { Movie } from '@/services/movies/list-movies-service'
 
-const MovieDetails: React.FC = () => {
+export function MovieDetails() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user } = useAuth()
   const queryClient = useQueryClient()
-  const [movie, setMovie] = useState<Movie | null>(null)
-  const [loading, setLoading] = useState(true)
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  useEffect(() => {
-    void loadMovie()
-  }, [id])
-
-  const loadMovie = async () => {
-    try {
-      if (!id) return
-      const movieData = await getMovieById(id)
-      setMovie(movieData)
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : 'Filme não encontrado',
-      )
-    } finally {
-      setLoading(false)
-    }
-  }
+  const {
+    data: movie,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['movie', id],
+    queryFn: () => {
+      if (!id) throw new Error('ID do filme não encontrado')
+      return getMovieById(id)
+    },
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+    retry: 1,
+  })
 
   const handleEdit = () => {
-    if (movie) {
-      void navigate(`/movies/edit/${movie.id}`)
-    }
+    setIsDrawerOpen(true)
+  }
+
+  const handleCloseDrawer = () => {
+    setIsDrawerOpen(false)
+  }
+
+  const handleEditSuccess = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['movie', id] })
+    await queryClient.invalidateQueries({ queryKey: ['movies'] })
   }
 
   const handleOpenDeleteModal = () => {
@@ -92,7 +97,7 @@ const MovieDetails: React.FC = () => {
     return `${hours}h ${mins}m`
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
@@ -112,12 +117,12 @@ const MovieDetails: React.FC = () => {
     )
   }
 
-  if (!movie) {
+  if (isError || !movie) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">
-            Filme não encontrado
+            {error instanceof Error ? error.message : 'Filme não encontrado'}
           </h1>
           <Button onClick={() => navigate('/')}>Voltar para a lista</Button>
         </div>
@@ -134,11 +139,9 @@ const MovieDetails: React.FC = () => {
           <h1 className="font-montserrat font-semibold text-[32px] leading-none text-movie-primary-text mb-2">
             {movie.title}
           </h1>
-          {movie.originalTitle !== movie.title && (
-            <p className="font-montserrat font-normal text-base leading-none text-movie-secondary-text">
-              {movie.originalTitle}
-            </p>
-          )}
+          <p className="font-montserrat font-normal text-base leading-none text-movie-secondary-text">
+            {movie.originalTitle}
+          </p>
         </div>
 
         <div className="flex gap-2">
@@ -183,11 +186,18 @@ const MovieDetails: React.FC = () => {
               Gêneros
             </h3>
             <div className="flex flex-wrap gap-2">
-              <span className="w-[86px] h-[31px] flex items-center justify-center bg-movie-accent-purple rounded-xs px-2 gap-2">
-                <span className="font-montserrat font-semibold text-[12px] leading-none uppercase text-white">
-                  {movie.genre}
-                </span>
-              </span>
+              {movie.genre.split(',').map((genre) => {
+                return (
+                  <span
+                    key={genre.trim()}
+                    className="w-[86px] h-[31px] flex items-center justify-center bg-movie-accent-purple rounded-xs px-2 gap-2"
+                  >
+                    <span className="font-montserrat font-semibold text-[12px] leading-none uppercase text-white">
+                      {genre.trim()}
+                    </span>
+                  </span>
+                )
+              })}
             </div>
           </div>
         </div>
@@ -284,6 +294,29 @@ const MovieDetails: React.FC = () => {
         </div>
       </div>
 
+      <MovieDrawer
+        key={movie.id + isDrawerOpen}
+        initialValues={{
+          id: movie.id,
+          title: movie.title,
+          originalTitle: movie.originalTitle,
+          releaseDate: new Date(movie.releaseDate).toISOString().split('T')[0],
+          description: movie.description,
+          budget: movie.budget,
+          duration: movie.duration,
+          genre: movie.genre,
+          posterUrl: movie.posterUrl,
+          rating: movie.rating,
+          votes: movie.votes,
+          score: movie.score ?? 0,
+          language: movie.language,
+          revenue: movie.revenue,
+        }}
+        isOpen={isDrawerOpen}
+        onClose={handleCloseDrawer}
+        onSuccess={handleEditSuccess}
+      />
+
       <DeleteMovieModal
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
@@ -294,5 +327,3 @@ const MovieDetails: React.FC = () => {
     </div>
   )
 }
-
-export default MovieDetails

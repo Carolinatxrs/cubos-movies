@@ -49,6 +49,8 @@
   --movie-box-bg: #FFFFFF;              
   --movie-box-border: #CFC9DB;          
   --movie-accent-purple: #C150FF2E;    
+
+  --box-bg: #F7EDFE;              
 }
 
 .dark {
@@ -93,6 +95,8 @@
   --movie-box-bg: #EBEAF814;            
   --movie-box-border: #3C393F;          
   --movie-accent-purple: #C150FF2E;     
+
+  --box-bg: #232225;   
 }
 
 
@@ -135,6 +139,8 @@
   --color-movie-box-bg: var(--movie-box-bg);
   --color-movie-box-border: var(--movie-box-border);
   --color-movie-accent-purple: var(--movie-accent-purple);
+
+  --color-box-bg: var(--box-bg);
 }
 
 @utility bg-cinema {

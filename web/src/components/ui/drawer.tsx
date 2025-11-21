@@ -13,7 +13,7 @@ export function Drawer({ isOpen, onClose, children }: DrawerProps) {
     <>
       <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
-      <div className="fixed right-0 top-0 h-full w-[565px] bg-[#232225] z-50 rounded-l-sm overflow-y-auto">
+      <div className="fixed right-0 top-0 h-full w-[565px] bg-box-bg z-50 rounded-l-sm overflow-y-auto">
         {children}
       </div>
     </>

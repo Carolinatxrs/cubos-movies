@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
-import { CreateMovieDrawer } from '@/components/create-movie-drawer'
 import { MovieCard } from '@/components/movie-card'
+import { MovieDrawer } from '@/components/movie-drawer'
 import { Pagination } from '@/components/pagination'
 import { SearchBar } from '@/components/search-bar'
 import { Button } from '@/components/ui/button'
@@ -143,7 +143,7 @@ export function Home() {
         />
       )}
 
-      <CreateMovieDrawer
+      <MovieDrawer
         isOpen={isCreateDrawerOpen}
         onClose={handleCloseDrawer}
         onSuccess={handleMovieCreated}

@@ -67,7 +67,7 @@ export function SignUp() {
 
   return (
     <div className="flex-1 flex justify-center items-center my-4">
-      <div className="w-full max-w-[412px] dark:bg-[#232225] bg-[#F7EDFE] rounded-sm p-4 shadow-lg">
+      <div className="w-full max-w-[412px] bg-box-bg rounded-sm p-4 shadow-lg">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
