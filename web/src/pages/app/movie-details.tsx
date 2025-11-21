@@ -134,9 +134,9 @@ export function MovieDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-start mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-6">
         <div className="flex-1">
-          <h1 className="font-montserrat font-semibold text-[32px] leading-none text-movie-primary-text mb-2">
+          <h1 className="font-montserrat font-semibold text-2xl md:text-[32px] leading-none text-movie-primary-text mb-2">
             {movie.title}
           </h1>
           <p className="font-montserrat font-normal text-base leading-none text-movie-secondary-text">
@@ -144,17 +144,27 @@ export function MovieDetails() {
           </p>
         </div>
 
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => navigate('/')}>
+        <div className="flex gap-2 w-full md:w-auto justify-start md:justify-end">
+          <Button
+            variant="secondary"
+            onClick={() => navigate('/')}
+            className="flex-1 md:flex-none"
+          >
             Voltar
           </Button>
 
           {isOwner && (
             <>
-              <Button variant="secondary" onClick={handleOpenDeleteModal}>
+              <Button
+                variant="secondary"
+                onClick={handleOpenDeleteModal}
+                className="flex-1 md:flex-none"
+              >
                 Deletar
               </Button>
-              <Button onClick={handleEdit}>Editar</Button>
+              <Button onClick={handleEdit} className="flex-1 md:flex-none">
+                Editar
+              </Button>
             </>
           )}
         </div>
@@ -162,7 +172,7 @@ export function MovieDetails() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-4">
-          <div className="w-[374px] h-[542px] rounded-sm overflow-hidden">
+          <div className="max-w-[374px] max-h-[542px] rounded-sm overflow-hidden">
             <img
               src={movie.posterUrl || '/placeholder-poster.jpg'}
               alt={`Poster de ${movie.title}`}
