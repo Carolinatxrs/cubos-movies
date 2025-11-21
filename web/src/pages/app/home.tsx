@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
+import { FilterModal } from '@/components/filter-modal'
 import { MovieCard } from '@/components/movie-card'
 import { MovieDrawer } from '@/components/movie-drawer'
 import { Pagination } from '@/components/pagination'
@@ -16,6 +17,8 @@ export function Home() {
   const [currentPage, setCurrentPage] = useState(1)
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false)
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false)
+  const [activeFilters, setActiveFilters] = useState<MoviesFilters>({})
   const itemsPerPage = 10
 
   useEffect(() => {
@@ -31,6 +34,7 @@ export function Home() {
     page: currentPage,
     limit: itemsPerPage,
     search: debouncedSearch || undefined,
+    ...activeFilters,
   }
 
   const {
@@ -61,13 +65,31 @@ export function Home() {
   }
 
   const handleOpenFilters = () => {
-    console.log('Abrir modal de filtros')
+    setIsFilterModalOpen(true)
+  }
+
+  const handleCloseFilters = () => {
+    setIsFilterModalOpen(false)
+  }
+
+  const handleApplyFilters = (newFilters: MoviesFilters) => {
+    setActiveFilters(newFilters)
+    setCurrentPage(1)
+  }
+
+  const handleClearFilters = () => {
+    setActiveFilters({})
+    setCurrentPage(1)
   }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  const hasActiveFilters = Object.keys(activeFilters).some(
+    (key) => activeFilters[key as keyof MoviesFilters] !== undefined,
+  )
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -82,9 +104,14 @@ export function Home() {
           <Button
             variant="secondary"
             onClick={handleOpenFilters}
-            className="flex items-center gap-2 flex-1 lg:flex-initial lg:w-auto"
+            className={`flex items-center gap-2 flex-1 lg:flex-initial lg:w-auto ${
+              hasActiveFilters ? 'bg-primary/20 border-primary' : ''
+            }`}
           >
             Filtros
+            {hasActiveFilters && (
+              <span className="w-2 h-2 bg-primary rounded-full"></span>
+            )}
           </Button>
 
           <Button
@@ -95,6 +122,14 @@ export function Home() {
           </Button>
         </div>
       </div>
+
+      {hasActiveFilters && (
+        <div className="mb-4 p-3 bg-movie-accent-purple border border-border rounded-sm">
+          <p className="text-sm text-movie-primary-text font-roboto">
+            Atenção: Filtros ativos
+          </p>
+        </div>
+      )}
 
       <div className="bg-movie-box-bg rounded-sm p-6 border border-movie-box-border backdrop-blur-sm">
         {isLoading ? (
@@ -127,8 +162,8 @@ export function Home() {
         ) : (
           <div className="text-center py-12">
             <p className="text-movie-secondary-text font-roboto text-lg">
-              {debouncedSearch
-                ? 'Nenhum filme encontrado para sua busca.'
+              {debouncedSearch || hasActiveFilters
+                ? 'Nenhum filme encontrado para sua busca ou filtros.'
                 : 'Nenhum filme cadastrado.'}
             </p>
           </div>
@@ -147,6 +182,14 @@ export function Home() {
         isOpen={isCreateDrawerOpen}
         onClose={handleCloseDrawer}
         onSuccess={handleMovieCreated}
+      />
+
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={handleCloseFilters}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
+        isLoading={isLoading}
       />
     </div>
   )
